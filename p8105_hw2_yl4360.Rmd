@@ -2,3 +2,43 @@
 title: "p8105_hw2_yl4360"
 output: github_document
 ---
+
+# Problem 1
+
+## Read and clean the Mr. Trash Wheel sheet.
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(readxl)
+data_MTW = read_excel("./HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "Mr. Trash Wheel", range = "A2:N338") %>% 
+  janitor::clean_names() %>% 
+  select(dumpster, plastic_bottles:homes_powered) %>% 
+  mutate(
+    sports_balls = round(sports_balls),
+    sports_balls = as.integer(sports_balls))
+```
+
+## Read and clean precipitation data for 2017 and 2018. 
+
+```{r}
+data_2017 = read_excel("./HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2017 Precipitation", range = "A2:B15") %>% 
+  janitor::clean_names() %>% 
+  drop_na(total)
+year_2017 = tibble(year = rep(2017, 13))
+data_2017 = bind_cols(year_2017, data_2017)
+
+data_2018 = read_excel("./HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2018 Precipitation", range = "A2:B15") %>% 
+  janitor::clean_names() %>% 
+  drop_na(total)
+year_2018 = tibble(year = rep(2018, 8))
+data_2018 = bind_cols(year_2018, data_2018)
+
+data_pre = bind_rows(data_2017, data_2018) %>% 
+  mutate(month = month.name[month])
+
+```
+
+## Write a paragraph about these data.
+
+I created two resulting datasets above. The first one called `data_MTW` has `r nrow(data_MTW)` rows and `r ncol(data_MTW)` columes. It shows dumpster-specific data. For instance, dumpster 1 had `r data_MTW[1, "plastic_bottles"]` plastic bottles. The second one called `data_pre` has `r nrow(data_pre)` rows and `r ncol(data_pre)` columes. It shows each month's total precipitation data for 2017 and 2018. The total precipitation in 2018 is `r data_pre[21, "total"]` and the total precipitation in 2017 is `r data_pre[13, "total"]`
