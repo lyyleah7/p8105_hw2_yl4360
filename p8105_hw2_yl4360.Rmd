@@ -7,7 +7,7 @@ output: github_document
 
 **Read and clean the Mr. Trash Wheel sheet.**
 
-```{r}
+```{r message = FALSE}
 library(tidyverse)
 library(dplyr)
 library(readxl)
@@ -97,3 +97,59 @@ The dataset `data_pols` contains `r nrow(data_pols)` observations of `r ncol(dat
 The dataset `data_snp` contains `r nrow(data_snp)` observations of `r ncol(data_snp)` variables realted to  Standard & Poor’s stock market index (S&P). The key variables are `r colnames(data_snp)`. The range of year is from `r data_snp[1, "year"]` to `r data_snp[787, "year"]`.
 
 The dataset `data_uem` contains `r nrow(data_uem)` observations of `r ncol(data_uem)` variables realted to  the perventage of unemployment at any given time. The key variables are `r colnames(data_uem)`. The range of year is from `r data_uem[1, "year"]` to `r data_uem[816, "year"]`.
+
+# Problem 3
+
+**Load and tidy Popular_Baby_Names.csv.** 
+
+```{r}
+baby_names = read_csv("./Popular_Baby_Names.csv") %>% 
+  janitor::clean_names() %>% 
+  mutate(gender = str_to_lower(gender),
+         ethnicity = str_to_lower(ethnicity),
+         childs_first_name = str_to_lower(childs_first_name),
+         ethnicity = recode(ethnicity, `asian and paci` = "asian and pacific islander", `black non hisp` = "black non hispanic", `white non hisp` = "white non hispanic")) %>% 
+  distinct() 
+```
+
+**Produce a table showing the rank in popularity of the name “Olivia” as a female baby name over time.**
+
+```{r}
+olivia  = baby_names %>% 
+  filter(gender == "female", childs_first_name == "olivia") %>% 
+  select(year_of_birth, ethnicity, rank) %>% 
+  pivot_wider(
+    names_from = "year_of_birth",
+    values_from = "rank") %>% 
+  knitr::kable(caption = "Table 1.Tthe rank in popularity of the name “Olivia” as a female baby name over time",align = "c")
+olivia
+```
+
+**Produce a table showing the most popular name among male children over time.**
+
+```{r}
+pop_na_male = baby_names %>% 
+  filter(gender == "male", rank == 1) %>% 
+  select(-gender, -rank, -count) %>% 
+   pivot_wider(
+    names_from = "year_of_birth",
+    values_from = "childs_first_name") %>% 
+  knitr::kable(caption = "Table 2. The most popular name among male children over time",align = "c")
+pop_na_male
+```
+
+**Scatterplot**
+
+```{r}
+plot = baby_names %>% 
+  filter(
+    gender == "male",
+    ethnicity == "white non hispanic",
+    year_of_birth == 2016) %>% 
+  ggplot(aes(x = rank, y = count))+
+  geom_point(alpha = 0.5) + 
+  labs(title = "Fig 1. Rank of popularity of boy's name in 2016") 
+
+plot
+```
+
