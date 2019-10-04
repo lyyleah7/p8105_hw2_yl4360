@@ -11,31 +11,35 @@ output: github_document
 library(tidyverse)
 library(dplyr)
 library(readxl)
-data_MTW = read_excel("./HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "Mr. Trash Wheel", range = "A2:N338") %>% 
+data_MTW = read_excel("./Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = "Mr. Trash Wheel", range = "A2:N408") %>% 
   janitor::clean_names() %>% 
   drop_na(dumpster) %>% 
   mutate(
     sports_balls = round(sports_balls),
     sports_balls = as.integer(sports_balls))
+
+data_MTW
 ```
 
 **Read and clean precipitation data for 2017 and 2018.**
 
 ```{r}
-data_2017 = read_excel("./HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2017 Precipitation", range = "A2:B15") %>% 
+data_2017 = read_excel("./Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = "2017 Precipitation", range = "A2:B15") %>% 
   janitor::clean_names() %>% 
   drop_na(total)
 year_2017 = tibble(year = rep(2017, 13))
 data_2017 = bind_cols(year_2017, data_2017)
 
-data_2018 = read_excel("./HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2018 Precipitation", range = "A2:B15") %>% 
+data_2018 = read_excel("./Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = "2018 Precipitation", range = "A2:B15") %>% 
   janitor::clean_names() %>% 
   drop_na(total)
-year_2018 = tibble(year = rep(2018, 8))
+year_2018 = tibble(year = rep(2018, 13))
 data_2018 = bind_cols(year_2018, data_2018)
 
 data_pre = bind_rows(data_2017, data_2018) %>% 
   mutate(month = month.name[month])
+
+data_pre
 
 ```
 
